@@ -54,17 +54,18 @@ import org.jbpm.process.workitem.core.util.WidMavenDepends;
             @WidParameter(name="ansibleTowerUrl", required = true),
             @WidParameter(name="bearerToken", required = true),
             @WidParameter(name="contentData", required = false),
-            @WidParameter(name="contentType", required = false)
+            @WidParameter(name="contentType", required = false),
+            @WidParameter(name="resultClass", required = false)
         },
         results={
-            @WidResult(name="result")
+            @WidResult(name="result", runtimeType = "java.lang.Object")
         },
         mavenDepends={
             @WidMavenDepends(group="com.rbc", artifact="ansibleTowerWih", version="1.0.0-SNAPSHOT")
         },
         serviceInfo = @WidService(category = "ansibleTowerWih", description = "${description}",
                 keywords = "",
-                action = @WidAction(title = "Sample Title"),
+                action = @WidAction(title = "Invoke an Ansible Tower Job Template"),
                 authinfo = @WidAuth(required = true, params = {"ansibleTowerUrl", "bearerToken"},
                         paramsdescription = {"ansibleTowerUrl", "bearerToken"},
                         referencesite = "referenceSiteURL")
