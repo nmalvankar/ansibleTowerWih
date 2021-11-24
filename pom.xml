@@ -6,7 +6,7 @@
   <groupId>com.rbc</groupId>
   <artifactId>ansibleTowerWih</artifactId>
   <name>ansibleTowerWih</name>
-  <version>1.0.0</version>
+  <version>1.0.0-SNAPSHOT</version>
   <description>Workitem Desciption</description>
   <organization>
     <name>organization</name>
@@ -45,7 +45,7 @@
         <artifactId>slf4j-api</artifactId>
         <version>${version.org.slf4j}</version>
       </dependency>
-      <dependency>
+      <!-- <dependency>
         <groupId>org.kie</groupId>
         <artifactId>kie-user-bom-parent</artifactId>
         <version>${version.org.kie}</version>
@@ -58,7 +58,7 @@
         <version>${version.org.kie}</version>
         <type>pom</type>
         <scope>import</scope>
-      </dependency>
+      </dependency> -->
     </dependencies>
   </dependencyManagement>
 

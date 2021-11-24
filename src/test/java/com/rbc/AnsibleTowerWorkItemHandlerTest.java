@@ -33,9 +33,7 @@ public class AnsibleTowerWorkItemHandlerTest extends AbstractBaseTest {
 
         TestWorkItemManager manager = new TestWorkItemManager();
 
-        this.classLoader = this.getClass().getClassLoader();
-
-        AnsibleTowerWorkItemHandler handler = new AnsibleTowerWorkItemHandler("testParamValue", "testParamValue", this.classLoader);
+        AnsibleTowerWorkItemHandler handler = new AnsibleTowerWorkItemHandler("testParamValue", "testParamValue");
         handler.setLogThrownException(true);
         handler.executeWorkItem(workItem,
                                 manager);

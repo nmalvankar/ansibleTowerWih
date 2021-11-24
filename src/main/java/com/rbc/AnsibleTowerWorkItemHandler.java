@@ -81,7 +81,7 @@ public class AnsibleTowerWorkItemHandler extends AbstractLogOrThrowWorkItemHandl
     private String ansibleTowerUrl;
     private String bearerToken;
 
-    private ClassLoader classLoader;
+    // private ClassLoader classLoader;
         
     public AnsibleTowerWorkItemHandler() {
         this("", "");
@@ -90,14 +90,14 @@ public class AnsibleTowerWorkItemHandler extends AbstractLogOrThrowWorkItemHandl
     public AnsibleTowerWorkItemHandler(String ansibleTowerUrl, String bearerToken) {
         this.ansibleTowerUrl = ansibleTowerUrl;
         this.bearerToken = bearerToken;
-        this.classLoader = this.getClass().getClassLoader();
+        // this.classLoader = this.getClass().getClassLoader();
     }
 
-    public AnsibleTowerWorkItemHandler(String ansibleTowerUrl, String bearerToken, ClassLoader classLoader){
-            this.ansibleTowerUrl = ansibleTowerUrl;
-            this.bearerToken = bearerToken;
-            this.classLoader = classLoader;
-        }
+    // public AnsibleTowerWorkItemHandler(String ansibleTowerUrl, String bearerToken, ClassLoader classLoader){
+    //         this.ansibleTowerUrl = ansibleTowerUrl;
+    //         this.bearerToken = bearerToken;
+    //         this.classLoader = classLoader;
+    //     }
 
     public void executeWorkItem(WorkItem workItem, WorkItemManager manager) {
         try {
@@ -125,7 +125,7 @@ public class AnsibleTowerWorkItemHandler extends AbstractLogOrThrowWorkItemHandl
                 if (!(content instanceof String)) {
                     content = transformRequest(content, contentType);
                 }
-                StringEntity entity = new StringEntity((String) content, contentType);
+                StringEntity entity = new StringEntity((String) content);
                 postRequest.setEntity(entity);   
             }
 
@@ -196,7 +196,7 @@ public class AnsibleTowerWorkItemHandler extends AbstractLogOrThrowWorkItemHandl
         try {
         Class<?> clazz = Class.forName(resultClass,
                     true,
-                    classLoader);
+                    this.getClass().getClassLoader());
 
         Object resultObject = transformResult(clazz,
                             contentType,
