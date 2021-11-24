@@ -23,6 +23,8 @@ import static org.junit.Assert.*;
 
 public class AnsibleTowerWorkItemHandlerTest extends AbstractBaseTest {
 
+    private ClassLoader classLoader;
+
     //@Test
     public void testHandler() throws Exception {
         WorkItemImpl workItem = new WorkItemImpl();
@@ -31,7 +33,9 @@ public class AnsibleTowerWorkItemHandlerTest extends AbstractBaseTest {
 
         TestWorkItemManager manager = new TestWorkItemManager();
 
-        AnsibleTowerWorkItemHandler handler = new AnsibleTowerWorkItemHandler("testParamValue", "testParamValue");
+        this.classLoader = this.getClass().getClassLoader();
+
+        AnsibleTowerWorkItemHandler handler = new AnsibleTowerWorkItemHandler("testParamValue", "testParamValue", this.classLoader);
         handler.setLogThrownException(true);
         handler.executeWorkItem(workItem,
                                 manager);

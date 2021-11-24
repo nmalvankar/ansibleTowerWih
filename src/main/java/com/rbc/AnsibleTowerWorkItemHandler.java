@@ -83,10 +83,20 @@ public class AnsibleTowerWorkItemHandler extends AbstractLogOrThrowWorkItemHandl
 
     private ClassLoader classLoader;
         
+    public AnsibleTowerWorkItemHandler() {
+        this("", "");
+    }
 
-    public AnsibleTowerWorkItemHandler(String ansibleTowerUrl, String bearerToken){
+    public AnsibleTowerWorkItemHandler(String ansibleTowerUrl, String bearerToken) {
+        this.ansibleTowerUrl = ansibleTowerUrl;
+        this.bearerToken = bearerToken;
+        this.classLoader = this.getClass().getClassLoader();
+    }
+
+    public AnsibleTowerWorkItemHandler(String ansibleTowerUrl, String bearerToken, ClassLoader classLoader){
             this.ansibleTowerUrl = ansibleTowerUrl;
             this.bearerToken = bearerToken;
+            this.classLoader = classLoader;
         }
 
     public void executeWorkItem(WorkItem workItem, WorkItemManager manager) {
@@ -101,8 +111,6 @@ public class AnsibleTowerWorkItemHandler extends AbstractLogOrThrowWorkItemHandl
 
             Map<String, Object> results = new HashMap<String, Object>();
 
-            this.classLoader = this.getClass().getClassLoader();
-            
             //Rest API call to Ansible Tower URL
             Object content = params.get("contentData");
             String contentType = (String)params.get("contentType") != null ? (String)params.get("contentType") : "application/json";
@@ -202,8 +210,7 @@ public class AnsibleTowerWorkItemHandler extends AbstractLogOrThrowWorkItemHandl
         }
         } else {
 
-        results.put(PARAM_RESULT,
-        result);
+        results.put(PARAM_RESULT, result);
         }
     }
 
