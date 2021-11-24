@@ -6,7 +6,7 @@
   <groupId>com.rbc</groupId>
   <artifactId>ansibleTowerWih</artifactId>
   <name>ansibleTowerWih</name>
-  <version>1.0.0-SNAPSHOT</version>
+  <version>1.0.1</version>
   <description>Workitem Desciption</description>
   <organization>
     <name>organization</name>
