@@ -80,7 +80,7 @@ public class AnsibleTowerWorkItemHandler extends AbstractLogOrThrowWorkItemHandl
     private static final Logger logger = LoggerFactory.getLogger(AnsibleTowerWorkItemHandler.class);
     public static final String PARAM_STATUS = "Status";
     public static final String PARAM_STATUS_MSG = "StatusMsg";
-    public static final String PARAM_RESULT = "Result";
+    public static final String PARAM_RESULT = "result";
     
     private String ansibleTowerUrl;
     private String bearerToken;
