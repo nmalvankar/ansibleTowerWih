@@ -63,7 +63,7 @@ import org.jbpm.process.workitem.core.util.WidMavenDepends;
             @WidResult(name="result", runtimeType = "java.lang.Object")
         },
         mavenDepends={
-            @WidMavenDepends(group="com.rbc", artifact="ansibleTowerWih", version="1.0.0-SNAPSHOT")
+            @WidMavenDepends(group="com.rbc", artifact="ansibleTowerWih", version="1.0.1")
         },
         serviceInfo = @WidService(category = "ansibleTowerWih", description = "${description}",
                 keywords = "",
