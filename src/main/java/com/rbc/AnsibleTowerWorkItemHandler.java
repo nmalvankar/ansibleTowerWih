@@ -25,6 +25,7 @@ import javax.xml.bind.JAXBContext;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import org.apache.http.HttpResponse;
+import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
@@ -55,6 +56,7 @@ import org.jbpm.process.workitem.core.util.WidMavenDepends;
             @WidParameter(name="bearerToken", required = true),
             @WidParameter(name="contentData", required = false),
             @WidParameter(name="contentType", required = false),
+            @WidParameter(name = "method", required = false),
             @WidParameter(name="resultClass", required = false)
         },
         results={
@@ -80,8 +82,10 @@ public class AnsibleTowerWorkItemHandler extends AbstractLogOrThrowWorkItemHandl
     
     private String ansibleTowerUrl;
     private String bearerToken;
+    private String httpMethod;
+    private String resultClass;
 
-    // private ClassLoader classLoader;
+    private ClassLoader classLoader;
         
     public AnsibleTowerWorkItemHandler() {
         this("", "");
@@ -90,52 +94,64 @@ public class AnsibleTowerWorkItemHandler extends AbstractLogOrThrowWorkItemHandl
     public AnsibleTowerWorkItemHandler(String ansibleTowerUrl, String bearerToken) {
         this.ansibleTowerUrl = ansibleTowerUrl;
         this.bearerToken = bearerToken;
-        // this.classLoader = this.getClass().getClassLoader();
+        this.classLoader = this.getClass().getClassLoader();
     }
 
-    // public AnsibleTowerWorkItemHandler(String ansibleTowerUrl, String bearerToken, ClassLoader classLoader){
-    //         this.ansibleTowerUrl = ansibleTowerUrl;
-    //         this.bearerToken = bearerToken;
-    //         this.classLoader = classLoader;
-    //     }
+    public AnsibleTowerWorkItemHandler(String ansibleTowerUrl, String bearerToken, ClassLoader classLoader){
+            this.ansibleTowerUrl = ansibleTowerUrl;
+            this.bearerToken = bearerToken;
+            this.classLoader = classLoader;
+        }
 
     public void executeWorkItem(WorkItem workItem, WorkItemManager manager) {
         try {
+            System.out.println("Inside the Ansible Tower Workitem handler");
             RequiredParameterValidator.validate(this.getClass(), workItem);
 
             Map<String, Object> params = workItem.getParameters();
 
             // sample parameters
             ansibleTowerUrl = (String) workItem.getParameter("ansibleTowerUrl");
+            System.out.println("ansibleTowerUrl: " + ansibleTowerUrl);
             bearerToken = (String) workItem.getParameter("bearerToken");
+            httpMethod = (String) workItem.getParameter("method") != null ? (String)params.get("method") : "GET";
+            resultClass = (String)params.get("resultClass");
 
             Map<String, Object> results = new HashMap<String, Object>();
-
-            //Rest API call to Ansible Tower URL
-            Object content = params.get("contentData");
-            String contentType = (String)params.get("contentType") != null ? (String)params.get("contentType") : "application/json";
-            String resultClass = (String)params.get("resultClass");
+            HttpResponse response = null;
 
             DefaultHttpClient httpClient = new DefaultHttpClient();
-		    HttpPost postRequest = new HttpPost(ansibleTowerUrl);
-            postRequest.addHeader("Authorization","Bearer " + bearerToken);
-            postRequest.addHeader("Content-Type", contentType);
+                
+            //Rest API call to Ansible Tower URL
+            if("POST".equalsIgnoreCase(httpMethod)) {
+                Object content = params.get("contentData");
+                String contentType = (String)params.get("contentType") != null ? (String)params.get("contentType") : "application/json";
+                
+                HttpPost postRequest = new HttpPost(ansibleTowerUrl);
+                postRequest.addHeader("Authorization","Bearer " + bearerToken);
+                postRequest.addHeader("Content-Type", contentType);
 
-            if(content != null) {
-                if (!(content instanceof String)) {
-                    content = transformRequest(content, contentType);
+                if(content != null) {
+                    if (!(content instanceof String)) {
+                        content = transformRequest(content, contentType);
+                    }
+                    StringEntity entity = new StringEntity((String) content);
+                    postRequest.setEntity(entity);   
                 }
-                StringEntity entity = new StringEntity((String) content);
-                postRequest.setEntity(entity);   
+                response = httpClient.execute(postRequest);
+            } else if("GET".equalsIgnoreCase(httpMethod)) {
+                HttpGet getRequest = new HttpGet(ansibleTowerUrl);
+                getRequest.addHeader("Authorization","Bearer " + bearerToken);
+                response = httpClient.execute(getRequest);
             }
 
-            HttpResponse response = httpClient.execute(postRequest);
             int responseCode = response.getStatusLine().getStatusCode();
             String responseBody = null;
             String responseContentType = null;
 
             if(response.getEntity() != null) {
                 responseBody = EntityUtils.toString(response.getEntity());
+                System.out.println("Response Body: " + responseBody);
             }
 
             if(response.getEntity().getContentType() != null)
@@ -150,6 +166,7 @@ public class AnsibleTowerWorkItemHandler extends AbstractLogOrThrowWorkItemHandl
                             "request to endpoint " + ansibleTowerUrl + " successfully completed " + response.getStatusLine().getReasonPhrase());
             }
 
+            System.out.println("Response code: " + responseCode);
             // return results
             results.put(PARAM_STATUS, responseCode);
 
@@ -196,11 +213,15 @@ public class AnsibleTowerWorkItemHandler extends AbstractLogOrThrowWorkItemHandl
         try {
         Class<?> clazz = Class.forName(resultClass,
                     true,
-                    this.getClass().getClassLoader());
+                    classLoader);
+        
+        System.out.println("Class: " + clazz);
 
         Object resultObject = transformResult(clazz,
                             contentType,
                             result);
+        
+        System.out.println("Result Object: " + resultObject);
 
         results.put(PARAM_RESULT,
         resultObject);
@@ -218,23 +239,23 @@ public class AnsibleTowerWorkItemHandler extends AbstractLogOrThrowWorkItemHandl
     String contentType,
     String content) throws Exception {
 
-if (contentType.toLowerCase().contains("application/json")) {
-ObjectMapper mapper = new ObjectMapper();
+    if (contentType.toLowerCase().contains("application/json")) {
+    ObjectMapper mapper = new ObjectMapper();
 
-return mapper.readValue(content,
-   clazz);
-} else if (contentType.toLowerCase().contains("application/xml")) {
-StringReader result = new StringReader(content);
-JAXBContext jaxbContext = JAXBContext.newInstance(new Class[]{clazz});
+    return mapper.readValue(content,
+    clazz);
+    } else if (contentType.toLowerCase().contains("application/xml")) {
+    StringReader result = new StringReader(content);
+    JAXBContext jaxbContext = JAXBContext.newInstance(new Class[]{clazz});
 
-return jaxbContext.createUnmarshaller().unmarshal(result);
-}
-logger.warn("Unable to find transformer for content type '{}' to handle for content '{}'",
-contentType,
-content);
-// unknown content type, returning string representation
-return content;
-}
+    return jaxbContext.createUnmarshaller().unmarshal(result);
+    }
+    logger.warn("Unable to find transformer for content type '{}' to handle for content '{}'",
+    contentType,
+    content);
+    // unknown content type, returning string representation
+    return content;
+    }
 
 }
 
