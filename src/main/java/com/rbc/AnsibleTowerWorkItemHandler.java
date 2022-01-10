@@ -28,7 +28,9 @@ import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
+import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.util.EntityUtils;
 import org.drools.core.util.StringUtils;
 import org.jbpm.process.workitem.core.AbstractLogOrThrowWorkItemHandler;
@@ -118,9 +120,9 @@ public class AnsibleTowerWorkItemHandler extends AbstractLogOrThrowWorkItemHandl
             resultClass = (String)params.get("resultClass");
 
             Map<String, Object> results = new HashMap<String, Object>();
-            HttpResponse response = null;
+            CloseableHttpResponse response = null;
 
-            DefaultHttpClient httpClient = new DefaultHttpClient();
+            CloseableHttpClient httpClient = HttpClients.createDefault();
                 
             //Rest API call to Ansible Tower URL
             if("POST".equalsIgnoreCase(httpMethod)) {
