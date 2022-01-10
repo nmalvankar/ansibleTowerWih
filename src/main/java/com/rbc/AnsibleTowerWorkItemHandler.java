@@ -140,9 +140,14 @@ public class AnsibleTowerWorkItemHandler extends AbstractLogOrThrowWorkItemHandl
                 }
                 response = httpClient.execute(postRequest);
             } else if("GET".equalsIgnoreCase(httpMethod)) {
+                System.out.println("Inside GET call: URL is: " + ansibleTowerUrl);
                 HttpGet getRequest = new HttpGet(ansibleTowerUrl);
                 getRequest.addHeader("Authorization","Bearer " + bearerToken);
+                System.out.println("Auth Header: " + getRequest.getHeaders("Authorization"));
+                System.out.println("Method: " + getRequest.getMethod());
+                System.out.println("Url: " +getRequest.getURI().toString());
                 response = httpClient.execute(getRequest);
+                System.out.println("Response: " +response);
             }
 
             int responseCode = response.getStatusLine().getStatusCode();
